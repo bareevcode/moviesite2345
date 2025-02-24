@@ -28,28 +28,24 @@
                 <input type="text" id="search-input" placeholder="Введите название фильма...">
                 <button type="submit"><i class="fas fa-search"></i></button>
             </form>
+            <!-- Контейнер для результатов поиска -->
+            <div class="search-results" id="search-results-container">
+                <h2>Результаты поиска</h2>
+                <div class="movie-grid" id="search-results">
+                    <!-- Результаты поиска будут загружены сюда -->
+                </div>
+            </div>
         </div>
     </header>
-    <main>
-        <!-- Секция "Популярные фильмы" -->
-        <section class="popular-movies">
-            <h2>Популярные фильмы</h2>
-            <div class="movie-grid" id="popular-movies">
-                <!-- Фильмы будут загружены сюда -->
-            </div>
-        </section>
 
-        <!-- Секция "Результаты поиска" -->
-        <section class="search-results">
-            <h2>Результаты поиска</h2>
-            <div class="movie-grid" id="search-results">
-                <!-- Результаты поиска будут загружены сюда -->
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 MovieSite. Все права защищены.</p>
-    </footer>
+    <!-- Модальное окно для плеера -->
+    <div id="player-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePlayerModal()">&times;</span>
+            <iframe id="youtube-player" width="100%" height="500" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <script src="js/script.js"></script>
 </body>
 </html>
