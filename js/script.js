@@ -1,4 +1,4 @@
-const API_KEY = 'dbc57c7043c83ca0ccb3097e0b320928'; // Замените на ваш API-ключ
+const API_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYmM1N2M3MDQzYzgzY2EwY2NiMzA5N2UwYjMyMDkyOCIsIm5iZiI6MTc0MDM5ODUxOC4zNjksInN1YiI6IjY3YmM1ZmI2MjQ5MmY0MDM3MDQ2NjBlYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EVrOoWvdz6h0dmnDYojRulMgWRRn_FIRR8x_TkOkfZ0'; // Замените на ваш API-ключ
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
