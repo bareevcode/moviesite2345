@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieSite - Смотри фильмы без рекламы</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">MovieSite</div>
+            <ul class="nav-links">
+                <li><a href="#">Главная</a></li>
+                <li><a href="#">Фильмы</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a href="#">Контакты</a></li>
+            </ul>
+            <div class="hamburger" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+        <div class="hero">
+            <h1>Смотри фильмы без рекламы</h1>
+            <p>Найдите свой любимый фильм и наслаждайтесь просмотром.</p>
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Введите название фильма...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </header>
+    <main>
+        <!-- Секция "Популярные фильмы" -->
+        <section class="popular-movies">
+            <h2>Популярные фильмы</h2>
+            <div class="movie-grid" id="popular-movies">
+                <!-- Фильмы будут загружены сюда -->
+            </div>
+        </section>
+
+        <!-- Секция "Результаты поиска" -->
+        <section class="search-results">
+            <h2>Результаты поиска</h2>
+            <div class="movie-grid" id="search-results">
+                <!-- Результаты поиска будут загружены сюда -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 MovieSite. Все права защищены.</p>
+    </footer>
+    <script src="js/script.js"></script>
+</body>
+</html>
