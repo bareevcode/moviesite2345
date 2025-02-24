@@ -1,136 +1,73 @@
-const API_KEY = 'ВАШ_API_КЛЮЧ'; // Замените на ваш API-ключ
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-
-// Элементы DOM
-const popularMoviesContainer = document.getElementById('popular-movies');
-const searchResultsContainer = document.getElementById('search-results');
+const YOUTUBE_API_KEY = 'AIzaSyAwl0OeE8lTXelI1NGuRdqYfdbDcTbdyco'; // Замените на ваш API ключ
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
+const searchResultsContainer = document.getElementById('search-results');
+const searchResultsWrapper = document.getElementById('search-results-container');
+const playerModal = document.getElementById('player-modal');
+const youtubePlayer = document.getElementById('youtube-player');
 
-// Загрузка популярных фильмов
-async function fetchPopularMovies() {
+// Функция для проверки, является ли видео трейлером
+function isTrailer(title) {
+    const trailerKeywords = ['трейлер', 'trailer', 'тизер', 'teaser', 'official'];
+    return trailerKeywords.some(keyword => title.toLowerCase().includes(keyword));
+}
+
+// Поиск видео на YouTube
+async function searchYouTube(query) {
     try {
-        const url = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=ru-RU`;
+        // Добавляем ключевые слова для поиска полных фильмов
+        const searchQuery = `${query} полный фильм`;
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&key=${YOUTUBE_API_KEY}&maxResults=10`;
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Ошибка при загрузке популярных фильмов');
-        }
         const data = await response.json();
-        displayMovies(data.results, popularMoviesContainer);
+
+        // Фильтруем результаты, исключая трейлеры
+        const filteredVideos = data.items.filter(video => !isTrailer(video.snippet.title));
+        return filteredVideos[0]; // Возвращаем первый фильтрованный результат
     } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Не удалось загрузить популярные фильмы. Пожалуйста, попробуйте позже.');
+        console.error('Ошибка при поиске видео на YouTube:', error);
+        return null;
     }
 }
 
-// Поиск фильмов
-async function searchMovies(query) {
-    try {
-        const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=ru-RU&query=${query}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Ошибка при поиске фильмов');
-        }
-        const data = await response.json();
-        displayMovies(data.results, searchResultsContainer);
-        document.querySelector('.search-results').style.display = 'block'; // Показываем результаты поиска
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Не удалось выполнить поиск. Пожалуйста, попробуйте позже.');
-    }
-}
-
-// Отображение фильмов
-function displayMovies(movies, container) {
-    container.innerHTML = ''; // Очищаем контейнер
-    if (movies.length === 0) {
-        container.innerHTML = '<p>Ничего не найдено.</p>'; // Сообщение, если фильмов нет
+// Отображение результата поиска
+function displayResult(video) {
+    searchResultsContainer.innerHTML = '';
+    if (!video) {
+        searchResultsContainer.innerHTML = '<p>Ничего не найдено.</p>';
         return;
     }
-    movies.forEach(movie => {
-        const movieCard = document.createElement('div');
-        movieCard.classList.add('movie-card');
-        movieCard.innerHTML = `
-            <img src="${IMAGE_URL}${movie.poster_path}" alt="${movie.title}">
-            <div class="movie-info">
-                <h3>${movie.title}</h3>
-                <p>Рейтинг: ${movie.vote_average}</p>
-            </div>
-        `;
-        movieCard.addEventListener('click', () => showMovieDetails(movie.id)); // Показ деталей фильма
-        container.appendChild(movieCard);
-    });
-}
-
-// Показ деталей фильма
-async function showMovieDetails(movieId) {
-    try {
-        const url = `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=ru-RU`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Ошибка при загрузке деталей фильма');
-        }
-        const data = await response.json();
-        displayMovieDetails(data);
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Не удалось загрузить детали фильма. Пожалуйста, попробуйте позже.');
-    }
-}
-
-// Отображение деталей фильма
-function displayMovieDetails(movie) {
-    const detailsContainer = document.createElement('div');
-    detailsContainer.classList.add('movie-details');
-    detailsContainer.innerHTML = `
-        <h2>${movie.title}</h2>
-        <img src="${IMAGE_URL}${movie.poster_path}" alt="${movie.title}">
-        <p><strong>Описание:</strong> ${movie.overview}</p>
-        <p><strong>Рейтинг:</strong> ${movie.vote_average}</p>
-        <p><strong>Дата выхода:</strong> ${movie.release_date}</p>
-        <button onclick="closeMovieDetails()">Закрыть</button>
+    const videoCard = document.createElement('div');
+    videoCard.classList.add('movie-card');
+    videoCard.innerHTML = `
+        <img src="${video.snippet.thumbnails.medium.url}" alt="${video.snippet.title}">
+        <div class="movie-info">
+            <h3>${video.snippet.title}</h3>
+        </div>
     `;
-    document.body.appendChild(detailsContainer);
+    videoCard.addEventListener('click', () => playVideo(video.id.videoId));
+    searchResultsContainer.appendChild(videoCard);
+    searchResultsWrapper.style.display = 'block';
 }
 
-// Закрытие деталей фильма
-function closeMovieDetails() {
-    const detailsContainer = document.querySelector('.movie-details');
-    if (detailsContainer) {
-        detailsContainer.remove();
-    }
+// Воспроизведение видео
+function playVideo(videoId) {
+    playerModal.style.display = 'block';
+    youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 }
 
-// Воспроизведение трейлера фильма (используем YouTube)
-async function playMovie(movieId) {
-    try {
-        const url = `${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=ru-RU`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Ошибка при загрузке трейлера');
-        }
-        const data = await response.json();
-        const trailer = data.results.find(video => video.site === 'YouTube' && video.type === 'Trailer');
-        if (trailer) {
-            window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
-        } else {
-            alert('Трейлер не найден.');
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Не удалось загрузить трейлер. Пожалуйста, попробуйте позже.');
-    }
+// Закрытие модального окна
+function closePlayerModal() {
+    playerModal.style.display = 'none';
+    youtubePlayer.src = '';
 }
 
 // Обработка формы поиска
-searchForm.addEventListener('submit', (e) => {
+searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const query = searchInput.value.trim();
     if (query) {
-        searchMovies(query);
+        const video = await searchYouTube(query);
+        displayResult(video);
     }
 });
-
-// Загружаем популярные фильмы при загрузке страницы
-fetchPopularMovies();
